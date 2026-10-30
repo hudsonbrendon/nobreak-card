@@ -33,6 +33,10 @@ class NoBreakCard extends LitElement {
     return 3;
   }
 
+  getGridOptions() {
+    return { columns: 6, rows: 3, min_columns: 4, min_rows: 2 };
+  }
+
   getMockedStateObj() {
     return {
       state: 'online',
@@ -162,3 +166,12 @@ class NoBreakCard extends LitElement {
 }
 
 export default NoBreakCard;
+
+window.customCards = window.customCards || [];
+window.customCards.push({
+  type: 'ha-card-nobreak',
+  name: 'Nobreak Card',
+  description: 'Battery, voltage, load and runtime of a NoBreak / UPS entity',
+  preview: true,
+  documentationURL: 'https://github.com/hudsonbrendon/ha-card-nobreak',
+});
