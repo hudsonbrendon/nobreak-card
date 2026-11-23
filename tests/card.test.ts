@@ -127,7 +127,7 @@ describe("graph", () => {
     const g = buildGraph(
       {
         "sensor.p": [{ s: "100", lu: 10 }, { s: "unavailable", lu: 20 }, { s: "150", lu: 30 }],
-        "binary_sensor.u": [{ s: "on", lu: 0 }, { s: "off", lu: 40 }, { s: "on", lu: 70 }, { s: "off", lu: 90 }],
+        "binary_sensor.u": [{ s: "on", lu: 0 }, { s: "off", lu: 40 }, { s: "on", lu: 70 }, { s: "off", lu: 75 }, { s: "on", lu: 80 }, { s: "off", lu: 90 }],
       },
       { power: "sensor.p", utility: "binary_sensor.u" },
       0,

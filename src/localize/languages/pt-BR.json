@@ -51,7 +51,8 @@
     "health": "Saúde da bateria",
     "health_runtime": "Saúde · {time} reais",
     "grid_ok": "Rede hoje · na faixa",
-    "grid_out": "Rede hoje · {time} fora"
+    "grid_out": "Rede hoje · {time} fora",
+    "outage_1": "1 queda"
   },
   "result": {
     "Done and passed": "aprovado",
@@ -103,6 +104,7 @@
     "power": "Potência de saída",
     "voltage": "Tensão da rede",
     "last_24h": "Últimas 24 h",
-    "outages": "{n} queda(s)"
+    "outages": "{n} quedas",
+    "outage_1": "1 queda"
   }
 }

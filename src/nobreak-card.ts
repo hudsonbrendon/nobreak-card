@@ -431,7 +431,7 @@ export class NobreakCard extends LitElement {
         this._chip(
           lastOutage ? "last_outage" : "outages",
           "mdi:transmission-tower-off",
-          outages ? this._t("history.outages_n", { n: outages }) : this._t("history.no_outages"),
+          outages === 1 ? this._t("history.outage_1") : outages ? this._t("history.outages_n", { n: outages }) : this._t("history.no_outages"),
           lastOutage
             ? this._t("history.last_outage", { time: this._ago(lastOutage) }) + (lastDuration ? ` · ${formatDuration(lastDuration)}` : "")
             : this._t("history.outages")
@@ -520,7 +520,7 @@ export class NobreakCard extends LitElement {
       ${g.voltage.length ? panel("input_voltage", g.voltage, "voltage", "V", "graph.voltage") : nothing}
       <div class="graph-foot">
         <span>${this._t("graph.last_24h")}</span>
-        ${g.outages.length ? html`<span class="legend"><i></i>${this._t("graph.outages", { n: g.outages.length })}</span>` : nothing}
+        ${g.outages.length ? html`<span class="legend"><i></i>${this._t(g.outages.length === 1 ? "graph.outage_1" : "graph.outages", { n: g.outages.length })}</span>` : nothing}
       </div>
     </div>`;
   }

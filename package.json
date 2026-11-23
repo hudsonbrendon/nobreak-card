@@ -1,6 +1,6 @@
 {
   "name": "nobreak-card",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Animated Lovelace card for UPSes (nobreak) through the Nobreak (NUT) integration",
   "type": "module",
   "main": "dist/nobreak-card.js",

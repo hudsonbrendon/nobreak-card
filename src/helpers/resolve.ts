@@ -86,6 +86,9 @@ export function ageParts(days: number): [number, number] {
   return [Math.floor(months / 12), months % 12];
 }
 
+/** Outages shorter than this are self-test blips (same filter as the automations). */
+export const MIN_OUTAGE_S = 15;
+
 /** Turn a 24 h history response into numeric series and outage spans (seconds). */
 export function buildGraph(
   res: HistoryResponse,
@@ -103,7 +106,7 @@ export function buildGraph(
     const t = Math.max(start, p.lu);
     if (p.s === "off" && off === null) off = t;
     else if (p.s !== "off" && off !== null) {
-      outages.push([off, t]);
+      if (t - off >= MIN_OUTAGE_S) outages.push([off, t]);
       off = null;
     }
   }

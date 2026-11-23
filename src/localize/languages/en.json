@@ -51,7 +51,8 @@
     "health": "Battery health",
     "health_runtime": "Health · {time} real",
     "grid_ok": "Grid today · in band",
-    "grid_out": "Grid today · {time} out"
+    "grid_out": "Grid today · {time} out",
+    "outage_1": "1 outage"
   },
   "result": {
     "Done and passed": "passed",
@@ -103,6 +104,7 @@
     "power": "Output power",
     "voltage": "Utility voltage",
     "last_24h": "Last 24 h",
-    "outages": "{n} outage(s)"
+    "outages": "{n} outages",
+    "outage_1": "1 outage"
   }
 }
