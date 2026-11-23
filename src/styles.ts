@@ -535,6 +535,61 @@ export const cardStyles = css`
     color: initial;
   }
 
+  /* ── graphs ─────────────────────────────────────────────────────────── */
+  .graphs {
+    border-top: 1px solid var(--bac-divider-color);
+    padding: 8px 12px 6px;
+  }
+  .graph {
+    cursor: pointer;
+    margin-bottom: 6px;
+  }
+  .graph-head,
+  .graph-foot {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: var(--bac-secondary-text-color);
+    margin-bottom: 2px;
+  }
+  .graph svg {
+    width: 100%;
+    height: 46px;
+    display: block;
+    overflow: visible;
+  }
+  .graph polyline {
+    fill: none;
+    stroke-width: 1.6;
+    vector-effect: non-scaling-stroke;
+    stroke-linejoin: round;
+  }
+  .graph polyline.power {
+    stroke: var(--bac-ok);
+  }
+  .graph polyline.voltage {
+    stroke: #3b82f6;
+  }
+  .graph rect.outage {
+    fill: var(--bac-warning);
+    opacity: 0.25;
+  }
+  .legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .legend i {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    background: var(--bac-warning);
+    opacity: 0.5;
+  }
+  .toolbar ha-icon-button.on {
+    color: var(--bac-ok);
+  }
+
   @keyframes flow {
     to {
       stroke-dashoffset: -24;

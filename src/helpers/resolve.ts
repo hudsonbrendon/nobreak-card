@@ -1,5 +1,5 @@
 import { KEYS, PLATFORMS, type EntityKey, type UpsState } from "../const";
-import type { HassObject, NobreakCardConfig, ResolvedEntities } from "../types";
+import type { Graph, HassObject, HistoryResponse, NobreakCardConfig, ResolvedEntities } from "../types";
 
 const GONE = new Set(["unavailable", "unknown", ""]);
 
@@ -84,4 +84,53 @@ export function toSeconds(value: number, unit: unknown): number {
 export function ageParts(days: number): [number, number] {
   const months = Math.floor(days / 30.44);
   return [Math.floor(months / 12), months % 12];
+}
+
+/** Turn a 24 h history response into numeric series and outage spans (seconds). */
+export function buildGraph(
+  res: HistoryResponse,
+  ids: { power?: string; voltage?: string; utility?: string },
+  start: number,
+  end: number
+): Graph {
+  const series = (id?: string): Array<[number, number]> =>
+    (id ? res[id] ?? [] : [])
+      .map((p) => [Math.max(start, p.lu), Number(p.s)] as [number, number])
+      .filter(([, v]) => Number.isFinite(v));
+  const outages: Array<[number, number]> = [];
+  let off: number | null = null;
+  for (const p of ids.utility ? res[ids.utility] ?? [] : []) {
+    const t = Math.max(start, p.lu);
+    if (p.s === "off" && off === null) off = t;
+    else if (p.s !== "off" && off !== null) {
+      outages.push([off, t]);
+      off = null;
+    }
+  }
+  if (off !== null) outages.push([off, end]);
+  return { start, end, power: series(ids.power), voltage: series(ids.voltage), outages };
+}
+
+/** Step polyline points for a series in a w x h box (value range padded). */
+export function polyline(points: Array<[number, number]>, start: number, end: number, w: number, h: number): string {
+  if (!points.length) return "";
+  const values = points.map(([, v]) => v);
+  let lo = Math.min(...values);
+  let hi = Math.max(...values);
+  if (hi - lo < 1) {
+    lo -= 1;
+    hi += 1;
+  }
+  const pad = (hi - lo) * 0.12;
+  lo -= pad;
+  hi += pad;
+  const x = (t: number) => ((t - start) / (end - start)) * w;
+  const y = (v: number) => h - ((v - lo) / (hi - lo)) * h;
+  const out: string[] = [];
+  points.forEach(([t, v], i) => {
+    if (i) out.push(`${x(t).toFixed(1)},${y(points[i - 1][1]).toFixed(1)}`);
+    out.push(`${x(t).toFixed(1)},${y(v).toFixed(1)}`);
+  });
+  out.push(`${w},${y(points[points.length - 1][1]).toFixed(1)}`);
+  return out.join(" ");
 }

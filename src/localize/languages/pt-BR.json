@@ -27,7 +27,8 @@
     "no_utility": "Sem rede",
     "range": "{low}–{high} V",
     "of_nominal": "{percent}% · {nominal} W",
-    "runtime": "{time} restantes"
+    "runtime": "{time} restantes",
+    "real_runtime": "{time} reais"
   },
   "history": {
     "outages": "Quedas",
@@ -44,7 +45,13 @@
     "outages_n": "{n} quedas",
     "no_outages": "Nenhuma queda",
     "last_outage": "última {time}",
-    "test_result": "Autoteste {result}"
+    "test_result": "Autoteste {result}",
+    "not_measured": "Sem medição",
+    "health_pending": "Saúde · na próxima queda",
+    "health": "Saúde da bateria",
+    "health_runtime": "Saúde · {time} reais",
+    "grid_ok": "Rede hoje · na faixa",
+    "grid_out": "Rede hoje · {time} fora"
   },
   "result": {
     "Done and passed": "aprovado",
@@ -60,7 +67,8 @@
     "beeper_off": "Alarme desativado",
     "avr": "Regulação de tensão ativa",
     "replace": "Substituir bateria",
-    "energy": "Energia de saída"
+    "energy": "Energia de saída",
+    "energy_today": "Energia de saída e custo hoje"
   },
   "sensitivity": {
     "low": "Baixa",
@@ -77,7 +85,9 @@
     "beeper_off": "Desativar alarme",
     "cancel_shutdown": "Cancelar desligamento",
     "sensitivity": "Sensibilidade",
-    "confirm_deep": "Rodar o autoteste completo? O nobreak fica na bateria até quase esvaziar."
+    "confirm_deep": "Rodar o autoteste completo? O nobreak fica na bateria até quase esvaziar.",
+    "shedding_on": "Ativar economia automática",
+    "shedding_off": "Desativar economia automática"
   },
   "editor": {
     "device": "Dispositivo Nobreak",
@@ -86,6 +96,13 @@
     "show_status": "Mostrar status",
     "show_history": "Mostrar histórico",
     "show_toolbar": "Mostrar barra de ações",
-    "compact_view": "Visão compacta"
+    "compact_view": "Visão compacta",
+    "show_graph": "Mostrar gráficos de 24 h"
+  },
+  "graph": {
+    "power": "Potência de saída",
+    "voltage": "Tensão da rede",
+    "last_24h": "Últimas 24 h",
+    "outages": "{n} queda(s)"
   }
 }

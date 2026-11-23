@@ -1,5 +1,5 @@
 export const CARD_NAME = "nobreak-card";
-export const CARD_VERSION = "2.0.0";
+export const CARD_VERSION = "2.1.0";
 
 /** The card is built around the `nobreak` integration; `nut` supplies the live readings. */
 export const PLATFORM = "nobreak";
@@ -45,6 +45,16 @@ export const KEYS = {
   beeper: ["switch", "nobreak", "alarme_sonoro"],
   transfer_low: ["number", "nobreak", "transferencia_baixa"],
   transfer_high: ["number", "nobreak", "transferencia_alta"],
+  health: ["sensor", "nobreak", "saude_da_bateria"],
+  real_runtime: ["sensor", "nobreak", "autonomia_real"],
+  energy_today: ["sensor", "nobreak", "energia_hoje"],
+  cost_today: ["sensor", "nobreak", "custo_hoje"],
+  cost_month: ["sensor", "nobreak", "custo_do_mes"],
+  v_min: ["sensor", "nobreak", "tensao_minima_hoje"],
+  v_max: ["sensor", "nobreak", "tensao_maxima_hoje"],
+  out_of_range: ["sensor", "nobreak", "tempo_fora_da_faixa_hoje"],
+  outages_today: ["sensor", "nobreak", "quedas_hoje"],
+  shedding: ["switch", "nobreak", "economia_automatica"],
   quick_test: ["button", "nobreak", "autoteste_rapido"],
   deep_test: ["button", "nobreak", "autoteste_completo"],
   stop_test: ["button", "nobreak", "parar_autoteste"],

@@ -1,12 +1,15 @@
 import { LitElement, html, nothing, svg, type PropertyValues, type TemplateResult } from "lit";
 import { customElement, property, state } from "lit/decorators.js";
 import { ALERT_STATES, BATTERY_STATES, CARD_NAME, CARD_VERSION, PLATFORM, type EntityKey, type UpsState } from "./const";
-import { ageParts, computeState, formatDuration, resolveEntities, toSeconds } from "./helpers/resolve";
+import { ageParts, buildGraph, computeState, formatDuration, polyline, resolveEntities, toSeconds } from "./helpers/resolve";
 import { localize, resolveLanguage } from "./localize";
 import { cardStyles } from "./styles";
-import type { HassObject, HassState, NobreakCardConfig, ResolvedEntities } from "./types";
+import type { Graph, HassObject, HassState, HistoryResponse, NobreakCardConfig, ResolvedEntities } from "./types";
 
-export { computeState, resolveEntities, statusFlags } from "./helpers/resolve";
+export { buildGraph, computeState, polyline, resolveEntities, statusFlags } from "./helpers/resolve";
+
+const GRAPH_REFRESH_MS = 5 * 60_000;
+const DAY_S = 86_400;
 
 console.info(
   `%c NOBREAK-CARD %c v${CARD_VERSION} `,
@@ -29,7 +32,11 @@ export class NobreakCard extends LitElement {
   @property({ attribute: false }) public hass?: HassObject;
   @state() private _config!: NobreakCardConfig;
 
+  @state() private _graph?: Graph;
+
   private _entities: ResolvedEntities = {};
+  private _graphTimer?: number;
+  private _graphFetched = 0;
 
   // ── HA card API ──────────────────────────────────────────────────────────
   static getStubConfig(hass?: HassObject): Partial<NobreakCardConfig> {
@@ -51,6 +58,7 @@ export class NobreakCard extends LitElement {
             { name: "show_name", selector: { boolean: {} } },
             { name: "show_status", selector: { boolean: {} } },
             { name: "show_history", selector: { boolean: {} } },
+            { name: "show_graph", selector: { boolean: {} } },
             { name: "show_toolbar", selector: { boolean: {} } },
             { name: "compact_view", selector: { boolean: {} } },
           ],
@@ -66,6 +74,7 @@ export class NobreakCard extends LitElement {
       show_name: true,
       show_status: true,
       show_history: true,
+      show_graph: true,
       show_toolbar: true,
       compact_view: false,
       ...config,
@@ -84,6 +93,44 @@ export class NobreakCard extends LitElement {
   }
 
   // ── lifecycle ────────────────────────────────────────────────────────────
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._graphTimer = window.setInterval(() => void this._fetchGraph(), GRAPH_REFRESH_MS);
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    window.clearInterval(this._graphTimer);
+  }
+
+  protected updated(): void {
+    if (!this._graphFetched && this.hass && this._entities.utility) void this._fetchGraph();
+  }
+
+  private async _fetchGraph(): Promise<void> {
+    if (!this.hass?.callWS || !this._config?.show_graph || this._config.compact_view) return;
+    const ids = { power: this._entities.power ?? this._entities.load, voltage: this._entities.input_voltage, utility: this._entities.utility };
+    const entityIds = Object.values(ids).filter(Boolean) as string[];
+    if (!entityIds.length) return;
+    this._graphFetched = Date.now();
+    const end = Date.now() / 1000;
+    const start = end - DAY_S;
+    try {
+      const res = await this.hass.callWS<HistoryResponse>({
+        type: "history/history_during_period",
+        start_time: new Date(start * 1000).toISOString(),
+        end_time: new Date(end * 1000).toISOString(),
+        entity_ids: entityIds,
+        minimal_response: true,
+        no_attributes: true,
+        significant_changes_only: false,
+      });
+      this._graph = buildGraph(res, ids, start, end);
+    } catch {
+      /* history not available: no graph */
+    }
+  }
+
   protected willUpdate(changed: PropertyValues): void {
     if (!changed.has("hass") || !this._config) return;
     const before = changed.get("hass") as HassObject | undefined;
@@ -96,7 +143,7 @@ export class NobreakCard extends LitElement {
   }
 
   protected shouldUpdate(changed: PropertyValues): boolean {
-    if (changed.has("_config")) return true;
+    if (changed.has("_config") || changed.has("_graph")) return true;
     const before = changed.get("hass") as HassObject | undefined;
     if (!before || !this.hass) return true;
     return Object.values(this._entities).some((id) => id && before.states[id] !== this.hass!.states[id]);
@@ -163,10 +210,10 @@ export class NobreakCard extends LitElement {
     void this.hass.callService("button", "press", { entity_id: id });
   }
 
-  private _toggleBeeper(): void {
-    const beeper = this._state("beeper");
-    if (!beeper || !this.hass) return;
-    void this.hass.callService("switch", beeper.state === "on" ? "turn_off" : "turn_on", { entity_id: beeper.entity_id });
+  private _toggle(key: EntityKey): void {
+    const entity = this._state(key);
+    if (!entity || !this.hass) return;
+    void this.hass.callService("switch", entity.state === "on" ? "turn_off" : "turn_on", { entity_id: entity.entity_id });
   }
 
   private _setSensitivity(option: string): void {
@@ -196,6 +243,7 @@ export class NobreakCard extends LitElement {
         </div>
         ${unavailable ? nothing : this._renderStats(st)}
         ${unavailable || !this._config.show_history || this._config.compact_view ? nothing : this._renderHistory()}
+        ${unavailable || !this._config.show_graph || this._config.compact_view ? nothing : this._renderGraph()}
         ${this._renderToolbar(st)}
       </ha-card>
     `;
@@ -276,12 +324,24 @@ export class NobreakCard extends LitElement {
   }
 
   private _renderTips(): Template {
-    const energy = this._num("energy");
+    const energy = this._num("energy_today") ?? this._num("energy");
+    const cost = this._state("cost_today");
+    const costText =
+      cost && !GONE.has(cost.state) && Number.isFinite(Number(cost.state))
+        ? new Intl.NumberFormat(this._lang, { style: "currency", currency: String(cost.attributes.unit_of_measurement ?? "BRL") }).format(Number(cost.state))
+        : "";
     return html`
       ${this._text("replace_battery") === "on" ? this._tip("replace_battery", "mdi:battery-alert", "tip.replace", this._t("tip.replace"), "alert") : nothing}
       ${this._text("avr") === "on" ? this._tip("avr", "mdi:sine-wave", "tip.avr", "AVR", "warn") : nothing}
       ${this._text("beeper") === "off" ? this._tip("beeper", "mdi:volume-off", "tip.beeper_off", "") : nothing}
-      ${energy !== null ? this._tip("energy", "mdi:lightning-bolt", "tip.energy", `${this._number(energy, energy < 10 ? 2 : 1)} kWh`) : nothing}
+      ${energy !== null
+        ? this._tip(
+            this._entities.energy_today ? "energy_today" : "energy",
+            "mdi:lightning-bolt",
+            this._entities.energy_today ? "tip.energy_today" : "tip.energy",
+            `${this._number(energy, energy < 10 ? 2 : 1)} kWh${costText ? ` · ${costText}` : ""}`
+          )
+        : nothing}
       ${this._text("firmware") ? this._tip("firmware", "mdi:chip", "tip.firmware", `FW ${this._text("firmware")!.replace(/^.*-(\d{6})$/, "$1")}`) : nothing}
     `;
   }
@@ -330,7 +390,11 @@ export class NobreakCard extends LitElement {
       ${this._block(
         "charge",
         charge === null ? "—" : `${Math.round(charge)}%`,
-        runtime !== null ? this._t("stat.runtime", { time: formatDuration(runtime) }) : this._t("stat.battery"),
+        this._num("real_runtime") !== null
+          ? this._t("stat.real_runtime", { time: formatDuration(this._num("real_runtime")! * 60) })
+          : runtime !== null
+            ? this._t("stat.runtime", { time: formatDuration(runtime) })
+            : this._t("stat.battery"),
         charge !== null && charge <= 25 ? "bad" : ""
       )}
       ${this._block("power", loadValue, loadSub, load !== null && load >= 80 ? "bad" : "")}
@@ -395,7 +459,70 @@ export class NobreakCard extends LitElement {
       }
       chips.push(this._chip(this._entities.battery_date ? "battery_date" : "battery_age", "mdi:car-battery", value, this._t("history.age")));
     }
+    if (this._entities.health) {
+      const health = this._num("health");
+      const real = this._num("real_runtime");
+      chips.push(
+        this._chip(
+          "health",
+          "mdi:battery-heart-variant",
+          health === null ? this._t("history.not_measured") : `${Math.round(health)}%`,
+          health === null ? this._t("history.health_pending") : real !== null ? this._t("history.health_runtime", { time: formatDuration(real * 60) }) : this._t("history.health"),
+          health !== null && health < 60 ? "warn" : ""
+        )
+      );
+    }
+    if (this._entities.v_min || this._entities.out_of_range) {
+      const lo = this._num("v_min");
+      const hi = this._num("v_max");
+      const out = this._seconds("out_of_range");
+      chips.push(
+        this._chip(
+          "out_of_range",
+          "mdi:sine-wave",
+          lo !== null && hi !== null ? `${Math.round(lo)}–${Math.round(hi)} V` : "—",
+          out ? this._t("history.grid_out", { time: formatDuration(out) }) : this._t("history.grid_ok"),
+          out && out >= 600 ? "warn" : ""
+        )
+      );
+    }
     return chips.length ? html`<div class="history">${chips}</div>` : nothing;
+  }
+
+  private _renderGraph(): Template {
+    const g = this._graph;
+    if (!g || (!g.power.length && !g.voltage.length)) return nothing;
+    const W = 300;
+    const H = 46;
+    const x = (t: number) => ((t - g.start) / (g.end - g.start)) * W;
+    const bands = g.outages.map(
+      ([a, b]) => svg`<rect class="outage" x=${x(a)} y="0" width=${Math.max(1.5, x(b) - x(a))} height=${H}></rect>`
+    );
+    const range = (pts: Array<[number, number]>) => {
+      const v = pts.map(([, n]) => n);
+      return v.length ? [Math.min(...v), Math.max(...v)] : null;
+    };
+    const panel = (key: EntityKey, pts: Array<[number, number]>, cls: string, unit: string, labelKey: string) => {
+      const r = range(pts);
+      return html`<div class="graph" @click=${() => this._moreInfo(key)}>
+        <div class="graph-head">
+          <span>${this._t(labelKey)}</span>
+          <span>${r ? `${this._number(r[0])}–${this._number(r[1])} ${unit}` : "—"}</span>
+        </div>
+        <svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true">
+          ${bands}
+          <polyline class=${cls} points=${polyline(pts, g.start, g.end, W, H)}></polyline>
+        </svg>
+      </div>`;
+    };
+    return html`<div class="graphs">
+      ${g.power.length ? panel(this._entities.power ? "power" : "load", g.power, "power", this._entities.power ? "W" : "%", "graph.power") : nothing}
+      ${g.voltage.length ? panel("input_voltage", g.voltage, "voltage", "V", "graph.voltage") : nothing}
+      <div class="graph-foot">
+        <span>${this._t("graph.last_24h")}</span>
+        ${g.outages.length ? html`<span class="legend"><i></i>${this._t("graph.outages", { n: g.outages.length })}</span>` : nothing}
+      </div>
+    </div>`;
   }
 
   private _iconButton(icon: string, labelKey: string, action: () => void, cls = ""): TemplateResult {
@@ -444,7 +571,15 @@ export class NobreakCard extends LitElement {
     const extras = [
       beeperOn && BATTERY_STATES.has(st) && this._available("mute") ? this._iconButton("mdi:volume-mute", "action.mute", () => this._press("mute"), "active") : nothing,
       beeper && !GONE.has(beeper.state)
-        ? this._iconButton(beeperOn ? "mdi:volume-high" : "mdi:volume-off", beeperOn ? "action.beeper_off" : "action.beeper_on", () => this._toggleBeeper())
+        ? this._iconButton(beeperOn ? "mdi:volume-high" : "mdi:volume-off", beeperOn ? "action.beeper_off" : "action.beeper_on", () => this._toggle("beeper"))
+        : nothing,
+      this._state("shedding") && !GONE.has(this._state("shedding")!.state)
+        ? this._iconButton(
+            this._state("shedding")!.state === "on" ? "mdi:leaf" : "mdi:leaf-off",
+            this._state("shedding")!.state === "on" ? "action.shedding_off" : "action.shedding_on",
+            () => this._toggle("shedding"),
+            this._state("shedding")!.state === "on" ? "on" : ""
+          )
         : nothing,
       this._renderSensitivity(),
     ];

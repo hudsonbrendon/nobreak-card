@@ -29,6 +29,7 @@ export interface HassObject {
   language?: string;
   themes?: { darkMode?: boolean };
   formatEntityState?: (stateObj: HassState) => string;
+  callWS?<T>(msg: Record<string, unknown>): Promise<T>;
   callService(
     domain: string,
     service: string,
@@ -46,9 +47,21 @@ export interface NobreakCardConfig {
   show_name?: boolean;
   show_status?: boolean;
   show_history?: boolean;
+  show_graph?: boolean;
   show_toolbar?: boolean;
   compact_view?: boolean;
   language?: string;
 }
 
 export type ResolvedEntities = Partial<Record<EntityKey, string>>;
+
+/** history/history_during_period with minimal_response: state + last_updated (s). */
+export type HistoryResponse = Record<string, Array<{ s: string; lu: number }>>;
+
+export interface Graph {
+  start: number;
+  end: number;
+  power: Array<[number, number]>;
+  voltage: Array<[number, number]>;
+  outages: Array<[number, number]>;
+}

@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import "../src/nobreak-card";
 import { CARD_NAME } from "../src/const";
 import { computeState, resolveEntities, statusFlags } from "../src/nobreak-card";
-import { ageParts, formatDuration } from "../src/helpers/resolve";
+import { ageParts, buildGraph, formatDuration, polyline } from "../src/helpers/resolve";
 import type { HassObject, HassState, NobreakCardConfig } from "../src/types";
 
 const NB = "dev-nobreak";
@@ -32,6 +32,11 @@ function mockHass(o: Opts = {}): HassObject & { calls: unknown[][] } {
     ["switch.nobreak_alarme_sonoro", NB, "nobreak", "alarme_sonoro", "off"],
     ["button.nobreak_autoteste_rapido", NB, "nobreak", "autoteste_rapido", "unknown"],
     ["button.nobreak_autoteste_completo", NB, "nobreak", "autoteste_completo", "unknown"],
+    ["sensor.nobreak_saude_da_bateria", NB, "nobreak", "saude_da_bateria", "74", { unit_of_measurement: "%" }],
+    ["sensor.nobreak_autonomia_real", NB, "nobreak", "autonomia_real", "20", { unit_of_measurement: "min" }],
+    ["sensor.nobreak_tensao_minima_hoje", NB, "nobreak", "tensao_minima_hoje", "198"],
+    ["sensor.nobreak_tensao_maxima_hoje", NB, "nobreak", "tensao_maxima_hoje", "231"],
+    ["sensor.nobreak_tempo_fora_da_faixa_hoje", NB, "nobreak", "tempo_fora_da_faixa_hoje", "180", { unit_of_measurement: "s" }],
     ["sensor.outro_nobreak_status", "other", "nut", "ups_status", "OB"],
   ];
   const states: Record<string, HassState> = {};
@@ -114,5 +119,46 @@ describe("card", () => {
     expect(text).toContain("3 quedas");
     el.shadowRoot!.querySelector<HTMLButtonElement>(".toolbar .text-button")!.click();
     expect(hass.calls[0]).toEqual(["button", "press", { entity_id: "button.nobreak_autoteste_rapido" }]);
+  });
+});
+
+describe("graph", () => {
+  it("builds series and outage spans", () => {
+    const g = buildGraph(
+      {
+        "sensor.p": [{ s: "100", lu: 10 }, { s: "unavailable", lu: 20 }, { s: "150", lu: 30 }],
+        "binary_sensor.u": [{ s: "on", lu: 0 }, { s: "off", lu: 40 }, { s: "on", lu: 70 }, { s: "off", lu: 90 }],
+      },
+      { power: "sensor.p", utility: "binary_sensor.u" },
+      0,
+      100
+    );
+    expect(g.power).toEqual([[10, 100], [30, 150]]);
+    expect(g.outages).toEqual([[40, 70], [90, 100]]);
+    expect(polyline(g.power, 0, 100, 300, 46).split(" ")).toHaveLength(4);
+  });
+
+  it("renders health, grid and the 24 h graphs from history", async () => {
+    const el = document.createElement(CARD_NAME) as HTMLElement & { hass: HassObject; setConfig(c: NobreakCardConfig): void; updateComplete: Promise<unknown> };
+    const hass = mockHass();
+    const now = Date.now() / 1000;
+    hass.callWS = (async () => ({
+      "sensor.nobreak_potencia_de_saida": [{ s: "180", lu: now - 3600 }, { s: "200", lu: now - 60 }],
+      "sensor.nobreak_tensao_de_entrada": [{ s: "216", lu: now - 3600 }],
+      "binary_sensor.nobreak_rede_eletrica": [{ s: "on", lu: now - 7200 }, { s: "off", lu: now - 1800 }, { s: "on", lu: now - 1500 }],
+    })) as HassObject["callWS"];
+    el.setConfig(config);
+    el.hass = hass;
+    document.body.appendChild(el);
+    await el.updateComplete;
+    await new Promise((r) => setTimeout(r, 0));
+    await el.updateComplete;
+    const root = el.shadowRoot!;
+    const text = root.textContent!.replace(/\s+/g, " ");
+    expect(text).toContain("74%");
+    expect(text).toContain("198–231 V");
+    expect(text).toContain("Últimas 24 h");
+    expect(root.querySelectorAll(".graph polyline").length).toBe(2);
+    expect(root.querySelectorAll(".graph rect.outage").length).toBe(2);
   });
 });

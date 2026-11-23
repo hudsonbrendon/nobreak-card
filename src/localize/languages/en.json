@@ -27,7 +27,8 @@
     "no_utility": "No power",
     "range": "{low}–{high} V",
     "of_nominal": "{percent}% · {nominal} W",
-    "runtime": "{time} left"
+    "runtime": "{time} left",
+    "real_runtime": "{time} real"
   },
   "history": {
     "outages": "Outages",
@@ -44,7 +45,13 @@
     "outages_n": "{n} outages",
     "no_outages": "No outages",
     "last_outage": "last {time}",
-    "test_result": "Self-test {result}"
+    "test_result": "Self-test {result}",
+    "not_measured": "Not measured",
+    "health_pending": "Health · next outage",
+    "health": "Battery health",
+    "health_runtime": "Health · {time} real",
+    "grid_ok": "Grid today · in band",
+    "grid_out": "Grid today · {time} out"
   },
   "result": {
     "Done and passed": "passed",
@@ -60,7 +67,8 @@
     "beeper_off": "Alarm disabled",
     "avr": "Voltage regulation active",
     "replace": "Replace battery",
-    "energy": "Output energy"
+    "energy": "Output energy",
+    "energy_today": "Output energy and cost today"
   },
   "sensitivity": {
     "low": "Low",
@@ -77,7 +85,9 @@
     "beeper_off": "Disable alarm",
     "cancel_shutdown": "Cancel shutdown",
     "sensitivity": "Sensitivity",
-    "confirm_deep": "Run a deep self-test? The UPS runs on battery until it is almost empty."
+    "confirm_deep": "Run a deep self-test? The UPS runs on battery until it is almost empty.",
+    "shedding_on": "Enable automatic load shedding",
+    "shedding_off": "Disable automatic load shedding"
   },
   "editor": {
     "device": "Nobreak device",
@@ -86,6 +96,13 @@
     "show_status": "Show status",
     "show_history": "Show history",
     "show_toolbar": "Show toolbar",
-    "compact_view": "Compact view"
+    "compact_view": "Compact view",
+    "show_graph": "Show 24 h graphs"
+  },
+  "graph": {
+    "power": "Output power",
+    "voltage": "Utility voltage",
+    "last_24h": "Last 24 h",
+    "outages": "{n} outage(s)"
   }
 }

@@ -12,6 +12,8 @@ MiSTer and Bambu cards.
 
 ![states](assets/states.png)
 
+![graphs and history](assets/graphs.png)
+
 - **Drawing**: wall outlet → UPS tower → monitor, with the battery window
   filled to the real charge. On utility the power flows in and out; charging
   shows a bolt; on battery the input is cut and the output turns orange;
@@ -19,15 +21,21 @@ MiSTer and Bambu cards.
   amber.
 - **Status**: online, charging, on battery (and for how long), low battery,
   self-test, overload, shutdown scheduled, unavailable.
-- **Stats**: battery % and runtime left, output power (W, load % of nominal),
+- **Stats**: battery % and runtime left (the real one once measured), output power (W, load % of nominal),
   utility voltage with the transfer range (or *No power*).
 - **History**: outages (count, last one and its duration), total time on
-  battery, last self-test and result, battery age.
+  battery, last self-test and result, battery age, **battery health** (with
+  the real runtime measured on the last discharge) and **grid today** (min–max
+  voltage, time out of the adequate band).
+- **Graphs**: output power and utility voltage over the last 24 h with the
+  outages shaded (history API, refreshed every 5 min; `show_graph: false` to
+  hide).
 - **Toolbar**: quick self-test, deep self-test (with confirmation), front panel
   test, stop test while one runs, cancel a scheduled shutdown, mute while on
-  battery, enable/disable the alarm, input sensitivity.
-- **Tips**: replace battery, AVR active, alarm disabled, output energy,
-  firmware.
+  battery, enable/disable the alarm, automatic load shedding on/off, input
+  sensitivity.
+- **Tips**: replace battery, AVR active, alarm disabled, output energy and
+  cost today, firmware.
 - Entities are found by the integrations' `translation_key`, so it works in
   any Home Assistant language. Visual editor, entity suggestion, en + pt-BR,
   dark mode, `prefers-reduced-motion`.
@@ -52,6 +60,7 @@ device: <nobreak device id>   # pick it in the visual editor
 # show_name: true
 # show_status: true
 # show_history: true
+# show_graph: true
 # show_toolbar: true
 # compact_view: false
 # entities:                   # optional overrides, by card key
