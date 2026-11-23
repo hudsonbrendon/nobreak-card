@@ -1,0 +1,91 @@
+{
+  "common": {
+    "name": "Card do Nobreak",
+    "description": "Card do nobreak para a integração Nobreak (NUT): desenho animado, bateria, carga, rede, histórico de quedas, autotestes e ajustes.",
+    "invalid_config": "Configuração inválida",
+    "more_info": "Mais informações",
+    "no_device": "Escolha o dispositivo Nobreak no editor do card."
+  },
+  "status": {
+    "online": "Na rede elétrica",
+    "charging": "Carregando",
+    "on_battery": "Na bateria",
+    "low_battery": "Bateria fraca",
+    "testing": "Autoteste em andamento",
+    "overload": "Sobrecarga",
+    "shutdown": "Desligamento agendado",
+    "unavailable": "Indisponível"
+  },
+  "sub": {
+    "since": "há {time}",
+    "runtime": "{time} de autonomia"
+  },
+  "stat": {
+    "battery": "Bateria",
+    "load": "Carga",
+    "utility": "Rede",
+    "no_utility": "Sem rede",
+    "range": "{low}–{high} V",
+    "of_nominal": "{percent}% · {nominal} W",
+    "runtime": "{time} restantes"
+  },
+  "history": {
+    "outages": "Quedas",
+    "none": "nenhuma ainda",
+    "ago": "{time}",
+    "battery_time": "Total na bateria",
+    "last_test": "Autoteste",
+    "never": "nunca",
+    "age": "Idade da bateria",
+    "age_value": "{y} a {m} m",
+    "age_months": "{m} meses",
+    "age_days": "{d} dias",
+    "no_date": "definir data",
+    "outages_n": "{n} quedas",
+    "no_outages": "Nenhuma queda",
+    "last_outage": "última {time}",
+    "test_result": "Autoteste {result}"
+  },
+  "result": {
+    "Done and passed": "aprovado",
+    "Done and warning": "com alerta",
+    "Done and error": "reprovado",
+    "Aborted": "cancelado",
+    "In progress": "em andamento",
+    "No test initiated": "nenhum"
+  },
+  "tip": {
+    "firmware": "Firmware",
+    "sensitivity": "Sensibilidade",
+    "beeper_off": "Alarme desativado",
+    "avr": "Regulação de tensão ativa",
+    "replace": "Substituir bateria",
+    "energy": "Energia de saída"
+  },
+  "sensitivity": {
+    "low": "Baixa",
+    "medium": "Média",
+    "high": "Alta"
+  },
+  "action": {
+    "quick_test": "Autoteste",
+    "deep_test": "Autoteste completo (descarrega a bateria)",
+    "stop_test": "Parar teste",
+    "panel_test": "Testar painel",
+    "mute": "Silenciar alarme",
+    "beeper_on": "Ativar alarme",
+    "beeper_off": "Desativar alarme",
+    "cancel_shutdown": "Cancelar desligamento",
+    "sensitivity": "Sensibilidade",
+    "confirm_deep": "Rodar o autoteste completo? O nobreak fica na bateria até quase esvaziar."
+  },
+  "editor": {
+    "device": "Dispositivo Nobreak",
+    "name": "Nome",
+    "show_name": "Mostrar nome",
+    "show_status": "Mostrar status",
+    "show_history": "Mostrar histórico",
+    "show_toolbar": "Mostrar barra de ações",
+    "compact_view": "Visão compacta"
+  }
+}

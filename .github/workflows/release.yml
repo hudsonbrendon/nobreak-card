@@ -1,45 +1,26 @@
-name: Build and Release
+name: Release
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - "v*"
 
 jobs:
-  build-and-attach:
+  release:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
-      
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
-          node-version: '22'
-      
-      - name: Cache node modules
-        uses: actions/cache@v4
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+      - name: Create release
+        uses: softprops/action-gh-release@v2
         with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm-${{ hashFiles('**/package.json') }}
-          restore-keys: |
-            ${{ runner.os }}-npm-
-      
-      - name: Install dependencies
-        run: npm ci || npm install
-      
-      - name: Build
-        run: npm run build
-      
-      - name: Zip dist directory
-        run: |
-          cd dist
-          zip -r ../ha-card-nobreak.zip .
-          cd ..
-      
-      - name: Upload build artifact to release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: |
-            dist/**
-            ha-card-nobreak.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: dist/nobreak-card.js
+          generate_release_notes: true

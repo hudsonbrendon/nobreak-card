@@ -1,7 +1,6 @@
 {
-    "name": "Nobreak Card",
-    "render_readme": true,
-    "filename": "ha-card-nobreak.js",
-    "content_in_root": true,
-    "homeassistant": "2024.11.0"
+  "name": "Nobreak Card",
+  "render_readme": true,
+  "filename": "nobreak-card.js",
+  "homeassistant": "2024.11.0"
 }

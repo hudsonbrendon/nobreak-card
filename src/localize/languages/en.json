@@ -1,0 +1,91 @@
+{
+  "common": {
+    "name": "Nobreak Card",
+    "description": "UPS card for the Nobreak (NUT) integration: animated drawing, battery, load, utility, outage history, self-tests and settings.",
+    "invalid_config": "Invalid configuration",
+    "more_info": "More info",
+    "no_device": "Pick the Nobreak device in the card editor."
+  },
+  "status": {
+    "online": "On utility power",
+    "charging": "Charging",
+    "on_battery": "On battery",
+    "low_battery": "Low battery",
+    "testing": "Self-test running",
+    "overload": "Overload",
+    "shutdown": "Shutdown scheduled",
+    "unavailable": "Unavailable"
+  },
+  "sub": {
+    "since": "for {time}",
+    "runtime": "{time} of runtime"
+  },
+  "stat": {
+    "battery": "Battery",
+    "load": "Load",
+    "utility": "Utility",
+    "no_utility": "No power",
+    "range": "{low}–{high} V",
+    "of_nominal": "{percent}% · {nominal} W",
+    "runtime": "{time} left"
+  },
+  "history": {
+    "outages": "Outages",
+    "none": "none yet",
+    "ago": "{time}",
+    "battery_time": "Total on battery",
+    "last_test": "Self-test",
+    "never": "never",
+    "age": "Battery age",
+    "age_value": "{y} y {m} m",
+    "age_months": "{m} m",
+    "age_days": "{d} d",
+    "no_date": "set date",
+    "outages_n": "{n} outages",
+    "no_outages": "No outages",
+    "last_outage": "last {time}",
+    "test_result": "Self-test {result}"
+  },
+  "result": {
+    "Done and passed": "passed",
+    "Done and warning": "warning",
+    "Done and error": "failed",
+    "Aborted": "aborted",
+    "In progress": "running",
+    "No test initiated": "none"
+  },
+  "tip": {
+    "firmware": "Firmware",
+    "sensitivity": "Sensitivity",
+    "beeper_off": "Alarm disabled",
+    "avr": "Voltage regulation active",
+    "replace": "Replace battery",
+    "energy": "Output energy"
+  },
+  "sensitivity": {
+    "low": "Low",
+    "medium": "Medium",
+    "high": "High"
+  },
+  "action": {
+    "quick_test": "Self-test",
+    "deep_test": "Deep self-test (discharges the battery)",
+    "stop_test": "Stop test",
+    "panel_test": "Test front panel",
+    "mute": "Mute alarm",
+    "beeper_on": "Enable alarm",
+    "beeper_off": "Disable alarm",
+    "cancel_shutdown": "Cancel shutdown",
+    "sensitivity": "Sensitivity",
+    "confirm_deep": "Run a deep self-test? The UPS runs on battery until it is almost empty."
+  },
+  "editor": {
+    "device": "Nobreak device",
+    "name": "Name",
+    "show_name": "Show name",
+    "show_status": "Show status",
+    "show_history": "Show history",
+    "show_toolbar": "Show toolbar",
+    "compact_view": "Compact view"
+  }
+}

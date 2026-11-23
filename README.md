@@ -1,49 +1,71 @@
 # Nobreak Card
 
-A custom Lovelace card for Home Assistant that displays Nobreak/UPS information.
+[![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/ha-card-nobreak)](https://github.com/hudsonbrendon/ha-card-nobreak/releases)
+[![Lint and Test](https://github.com/hudsonbrendon/ha-card-nobreak/actions/workflows/lint.yml/badge.svg)](https://github.com/hudsonbrendon/ha-card-nobreak/actions/workflows/lint.yml)
 
-## Installation
+Animated Lovelace card for a UPS (nobreak) through the
+[Nobreak (NUT)](https://github.com/hudsonbrendon/ha-nobreak) integration,
+reading the live values from the core **Network UPS Tools** device it is
+connected via. Same layout and grey/white drawing as the vacuum, HP printer,
+MiSTer and Bambu cards.
 
-### HACS (Recommended)
+![states](assets/states.png)
 
-1. Make sure [HACS](https://hacs.xyz/) is installed.
-2. Search for "Nobreak Card" in the HACS Frontend section.
-3. Install the card.
-4. Add the card to your dashboard.
+- **Drawing**: wall outlet → UPS tower → monitor, with the battery window
+  filled to the real charge. On utility the power flows in and out; charging
+  shows a bolt; on battery the input is cut and the output turns orange;
+  low battery, overload and scheduled shutdown blink red; self-test blinks
+  amber.
+- **Status**: online, charging, on battery (and for how long), low battery,
+  self-test, overload, shutdown scheduled, unavailable.
+- **Stats**: battery % and runtime left, output power (W, load % of nominal),
+  utility voltage with the transfer range (or *No power*).
+- **History**: outages (count, last one and its duration), total time on
+  battery, last self-test and result, battery age.
+- **Toolbar**: quick self-test, deep self-test (with confirmation), front panel
+  test, stop test while one runs, cancel a scheduled shutdown, mute while on
+  battery, enable/disable the alarm, input sensitivity.
+- **Tips**: replace battery, AVR active, alarm disabled, output energy,
+  firmware.
+- Entities are found by the integrations' `translation_key`, so it works in
+  any Home Assistant language. Visual editor, entity suggestion, en + pt-BR,
+  dark mode, `prefers-reduced-motion`.
 
-### Manual Installation
+## Install
 
-1. Download the `ha-card-nobreak.js` file from the latest release.
-2. Upload the file to your `www` folder in Home Assistant.
-3. Add a reference to the card in your `ui-lovelace.yaml`:
+HACS → Frontend → ⋮ → *Custom repositories* → add
+`https://github.com/hudsonbrendon/ha-card-nobreak` as *Dashboard*, then install
+**Nobreak Card**. Manual: copy `dist/nobreak-card.js` to `/config/www/` and add
+it as a JavaScript module resource.
+
+Requires the [Nobreak (NUT)](https://github.com/hudsonbrendon/ha-nobreak)
+integration (2026.11+: its device is linked to the NUT one with
+"connected via").
+
+## Configuration
 
 ```yaml
-resources:
-  - url: /local/ha-card-nobreak.js
-    type: module
+type: custom:nobreak-card
+device: <nobreak device id>   # pick it in the visual editor
+# name: Nobreak
+# show_name: true
+# show_status: true
+# show_history: true
+# show_toolbar: true
+# compact_view: false
+# entities:                   # optional overrides, by card key
+#   charge: sensor.my_ups_battery_charge
 ```
-
-## Usage
-
-```yaml
-type: custom:ha-card-nobreak
-entity: sensor.your_ups_entity
-```
-
-## Options
-
-| Name | Type | Default | Description |
-|------|------|---------|-------------|
-| entity | string | required | Entity ID of your UPS/Nobreak sensor |
 
 ## Development
 
-### Setup
 ```bash
-npm install
+npm ci
+npm run lint && npm run typecheck && npm test
+npm run build   # dist/nobreak-card.js
 ```
 
-### Build
-```bash
-npm run build
-```
+## License
+
+MIT
