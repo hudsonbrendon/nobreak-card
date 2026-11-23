@@ -465,7 +465,7 @@ window.customCards.push({
   name: localize("common.name"),
   description: localize("common.description"),
   preview: true,
-  documentationURL: "https://github.com/hudsonbrendon/ha-card-nobreak",
+  documentationURL: "https://github.com/hudsonbrendon/nobreak-card",
   getEntitySuggestion: (hass: HassObject, entityId: string) => {
     const entry = hass.entities?.[entityId];
     if (!entry || entry.platform !== PLATFORM || !entry.device_id) return null;

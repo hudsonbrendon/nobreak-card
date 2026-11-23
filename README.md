@@ -1,8 +1,8 @@
 # Nobreak Card
 
 [![HACS](https://img.shields.io/badge/HACS-Custom-41BDF5.svg)](https://hacs.xyz)
-[![Release](https://img.shields.io/github/v/release/hudsonbrendon/ha-card-nobreak)](https://github.com/hudsonbrendon/ha-card-nobreak/releases)
-[![Lint and Test](https://github.com/hudsonbrendon/ha-card-nobreak/actions/workflows/lint.yml/badge.svg)](https://github.com/hudsonbrendon/ha-card-nobreak/actions/workflows/lint.yml)
+[![Release](https://img.shields.io/github/v/release/hudsonbrendon/nobreak-card)](https://github.com/hudsonbrendon/nobreak-card/releases)
+[![Lint and Test](https://github.com/hudsonbrendon/nobreak-card/actions/workflows/lint.yml/badge.svg)](https://github.com/hudsonbrendon/nobreak-card/actions/workflows/lint.yml)
 
 Animated Lovelace card for a UPS (nobreak) through the
 [Nobreak (NUT)](https://github.com/hudsonbrendon/ha-nobreak) integration,
@@ -35,7 +35,7 @@ MiSTer and Bambu cards.
 ## Install
 
 HACS → Frontend → ⋮ → *Custom repositories* → add
-`https://github.com/hudsonbrendon/ha-card-nobreak` as *Dashboard*, then install
+`https://github.com/hudsonbrendon/nobreak-card` as *Dashboard*, then install
 **Nobreak Card**. Manual: copy `dist/nobreak-card.js` to `/config/www/` and add
 it as a JavaScript module resource.
 
