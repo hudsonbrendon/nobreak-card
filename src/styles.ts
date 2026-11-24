@@ -98,28 +98,6 @@ export const cardStyles = css`
     margin: 2px;
   }
 
-  .pill {
-    position: absolute;
-    display: inline-flex;
-    align-items: center;
-    gap: 3px;
-    padding: 2px 7px;
-    border-radius: 999px;
-    font-size: 0.72rem;
-    font-weight: 600;
-    line-height: 1.2;
-    color: var(--bac-primary-text-color);
-    background: var(--bac-background, var(--card-background-color));
-    border: 1px solid var(--bac-divider-color);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
-    white-space: nowrap;
-  }
-  .pill ha-icon {
-    --mdc-icon-size: 13px;
-  }
-  .pill ha-icon {
-    --mdc-icon-size: 13px;
-  }
   /* ── metadata ───────────────────────────────────────────────────────── */
   .metadata {
     margin: var(--bac-spacing) auto;
@@ -241,208 +219,181 @@ export const cardStyles = css`
     text-align: center;
   }
 
-  /* ── illustration ───────────────────────────────────────────────────── */
+  /* ── illustration (same drawing style as the console / appliance cards) ── */
   .hero {
-    position: relative;
+    display: block;
     margin: 0 auto;
-    width: min(94%, 420px);
     cursor: pointer;
+    width: min(86%, 340px);
   }
-  svg.ups {
+  .art {
     width: 100%;
     height: auto;
-    display: block;
     overflow: visible;
-    filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.14));
   }
-  .ups .outlet rect:first-child,
-  .ups .load rect {
-    fill: var(--bac-body);
-    stroke: var(--bac-outline);
-    stroke-width: 1.4;
+  .art.unavailable {
+    opacity: 0.45;
   }
-  .ups .outlet .slot {
-    fill: var(--bac-cap);
-    stroke: none;
+  .ups {
+    --ups-black: #2b2f36;
+    --ups-black-2: #3a3f47;
+    --ups-black-3: #1d2025;
+    --ups-led: #6fc24a;
   }
-  .ups .load .screen {
-    fill: var(--bac-panel);
-    stroke: none;
+  .ups .floor {
+    stroke: var(--bac-metal);
+    stroke-width: 1.5;
+    stroke-linecap: round;
   }
-  .ups .cable {
+  .ups .dark-front {
+    fill: var(--ups-black-3);
+    stroke: #121417;
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+  .ups .dark-top {
+    fill: var(--ups-black-2);
+    stroke: #121417;
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+  .ups .dark-side {
+    fill: var(--ups-black);
+    stroke: #121417;
+    stroke-width: 1;
+    stroke-linejoin: round;
+  }
+  .ups .dark-side-low {
+    fill: #33373e;
+  }
+  .ups .grille-area {
+    fill: var(--ups-black-3);
+  }
+  .ups .slat {
+    stroke: var(--ups-black-2);
+    stroke-width: 1.6;
+    stroke-linecap: round;
+  }
+  .ups .gloss {
+    fill: #15171b;
+  }
+  .ups .shine {
+    stroke: #fff;
+    stroke-width: 1;
+    opacity: 0.18;
+  }
+  .ups .wordmark {
+    font: 700 7px/1 system-ui, sans-serif;
+    fill: #d8dbe0;
+    letter-spacing: 0.4px;
+  }
+  .ups .wordmark.small {
+    font: 600 4px/1 system-ui, sans-serif;
+    fill: var(--bac-outline);
+  }
+  .ups .emboss {
+    font: 600 6px/1 system-ui, sans-serif;
+    fill: var(--ups-black-2);
+  }
+  .ups .ring {
+    fill: #121417;
+  }
+  .ups .chrome-button {
+    fill: #c9ccd1;
+    stroke: #8d939b;
+    stroke-width: 0.8;
+  }
+  .ups .power-glyph {
     fill: none;
-    stroke: var(--bac-metal-2);
-    stroke-width: 4;
+    stroke: #5f656d;
+    stroke-width: 1;
     stroke-linecap: round;
   }
-  .ups .flow {
+  .ups .led-ring {
     fill: none;
-    stroke-width: 2.4;
-    stroke-linecap: round;
-    stroke-dasharray: 3 9;
-    animation: flow 1.1s linear infinite;
-  }
-  .ups .flow.in {
-    stroke: #3b82f6;
-  }
-  .ups .flow.out {
-    stroke: var(--bac-ok);
-  }
-  .ups .cut line {
-    stroke: var(--bac-error);
-    stroke-width: 3;
-    stroke-linecap: round;
-  }
-  .ups .body {
-    fill: var(--bac-body);
-    stroke: var(--bac-outline);
-    stroke-width: 1.4;
-  }
-  .ups .shadow {
-    fill: rgba(0, 0, 0, 0.12);
-  }
-  .ups .panel {
-    fill: var(--bac-panel);
-  }
-  .ups .button {
-    fill: var(--bac-plate);
-    stroke: var(--bac-ok);
-    stroke-width: 2;
-  }
-  .ups .button-glyph {
-    fill: none;
-    stroke: var(--bac-ok);
-    stroke-width: 2;
-    stroke-linecap: round;
+    stroke: var(--ups-led);
+    stroke-width: 1.8;
+    opacity: 0;
   }
   .ups .led {
     fill: #3a3f46;
   }
-  .ups .led.power {
-    fill: var(--bac-ok);
+  .ups .foot {
+    fill: #121417;
   }
-  .ups .battery-shell,
-  .ups .battery-cap {
-    fill: var(--bac-body-2);
-    stroke: var(--bac-outline);
-    stroke-width: 1.4;
-  }
-  .ups .battery-fill {
-    transition: y 0.8s ease, height 0.8s ease;
-  }
-  .ups .battery-fill.high {
-    fill: var(--bac-ok);
-  }
-  .ups .battery-fill.mid {
+  .ups .bolt path {
     fill: var(--bac-warning);
-  }
-  .ups .battery-fill.low {
-    fill: var(--bac-error);
-  }
-  .ups .bolt {
-    fill: #fff;
     opacity: 0;
   }
-  .ups .vent {
-    stroke: var(--bac-metal);
-    stroke-width: 2;
-    stroke-linecap: round;
+  .ups .warn-sign path {
+    fill: var(--bac-error);
+  }
+  .ups .warn-glyph {
+    fill: #fff;
   }
 
-  /* states */
-  .hero.charging .ups .bolt {
-    opacity: 0.9;
-    animation: breathe 1.8s ease-in-out infinite;
+  /* state: the power ring and LEDs tell it, like the consoles' power light */
+  .ups.online .led-ring,
+  .ups.charging .led-ring {
+    opacity: 1;
   }
-  .hero.charging .ups .battery-fill {
-    animation: breathe 2.4s ease-in-out infinite;
+  .ups.online .led-utility,
+  .ups.charging .led-utility {
+    fill: var(--ups-led);
+    filter: drop-shadow(0 0 2px var(--ups-led));
   }
-  .hero.on_battery .ups .flow.in,
-  .hero.low_battery .ups .flow.in,
-  .hero.shutdown .ups .flow.in {
-    stroke: transparent;
-    animation: none;
+  .ups.charging .led-ring {
+    animation: breathe 3s ease-in-out infinite;
   }
-  .hero.on_battery .ups .flow.out,
-  .hero.low_battery .ups .flow.out,
-  .hero.shutdown .ups .flow.out {
-    stroke: var(--bac-warning);
+  .ups.charging .led-battery {
+    fill: #f2b33d;
+    animation: breathe 2s ease-in-out infinite;
   }
-  .hero.on_battery .ups .led.power,
-  .hero.testing .ups .led.power {
-    fill: var(--bac-warning);
+  .ups.on_battery,
+  .ups.testing {
+    --ups-led: var(--bac-warning);
   }
-  .hero.on_battery .ups .led.battery {
-    fill: var(--bac-warning);
+  .ups.on_battery .led-ring,
+  .ups.testing .led-ring,
+  .ups.on_battery .led-battery,
+  .ups.testing .led-battery {
+    opacity: 1;
+    fill: var(--ups-led);
     animation: blink 1.2s steps(1) infinite;
   }
-  .hero.on_battery .ups .button,
-  .hero.on_battery .ups .button-glyph,
-  .hero.testing .ups .button,
-  .hero.testing .ups .button-glyph {
-    stroke: var(--bac-warning);
+  .ups.on_battery .led-ring,
+  .ups.testing .led-ring {
+    fill: none;
   }
-  .hero.low_battery .ups .led.power,
-  .hero.low_battery .ups .led.battery,
-  .hero.shutdown .ups .led.battery,
-  .hero.overload .ups .led.battery {
-    fill: var(--bac-error);
+  .ups.on_battery .bolt path {
+    opacity: 1;
+    animation: breathe 1.6s ease-in-out infinite;
+  }
+  .ups.low_battery,
+  .ups.overload,
+  .ups.shutdown {
+    --ups-led: var(--bac-error);
+  }
+  .ups.low_battery .led-ring,
+  .ups.overload .led-ring,
+  .ups.shutdown .led-ring {
+    opacity: 1;
     animation: blink 0.5s steps(1) infinite;
   }
-  .hero.low_battery .ups .button,
-  .hero.low_battery .ups .button-glyph,
-  .hero.overload .ups .button,
-  .hero.overload .ups .button-glyph,
-  .hero.shutdown .ups .button,
-  .hero.shutdown .ups .button-glyph {
-    stroke: var(--bac-error);
+  .ups.low_battery .led-battery,
+  .ups.overload .led-battery,
+  .ups.shutdown .led-battery {
+    fill: var(--ups-led);
+    animation: blink 0.5s steps(1) infinite;
   }
-  .hero.overload .ups .body {
-    stroke: var(--bac-error);
-    stroke-width: 2.4;
-    animation: breathe 1s ease-in-out infinite;
-  }
-  .hero.testing .ups .led.battery {
-    fill: var(--bac-warning);
-    animation: blink 0.7s steps(1) infinite;
-  }
-  .hero.testing .ups .flow.in {
-    animation-duration: 2.4s;
-    opacity: 0.5;
-  }
-  .hero.unavailable svg.ups {
-    filter: grayscale(1);
-    opacity: 0.45;
-  }
-  .hero.unavailable .ups .flow {
-    display: none;
-  }
-  .hero.unavailable .ups .led {
-    fill: #3a3f46;
+  .ups .warn-sign {
+    animation: breathe 1.2s ease-in-out infinite;
   }
 
-  .pill.charge {
-    top: 79%;
-    left: 50%;
-    transform: translate(-50%, 0);
-  }
-  .pill.charge.low {
-    color: #fff;
-    background: var(--bac-error);
-    border-color: transparent;
-  }
-  .pill.runtime {
-    top: 4%;
-    right: 22%;
-  }
-  .pill.runtime.warn {
-    color: #fff;
-    background: var(--bac-warning);
-    border-color: transparent;
-  }
-  .pill.power {
-    top: 46%;
-    right: 0;
+  .detail {
+    margin-top: 4px;
+    font-size: 0.85rem;
+    color: var(--bac-secondary-text-color);
   }
   .status .sub {
     opacity: 0.8;
@@ -590,11 +541,6 @@ export const cardStyles = css`
     color: var(--bac-ok);
   }
 
-  @keyframes flow {
-    to {
-      stroke-dashoffset: -24;
-    }
-  }
   @keyframes blink {
     50% {
       opacity: 0.15;
@@ -607,7 +553,8 @@ export const cardStyles = css`
   }
   @media (prefers-reduced-motion: reduce) {
     .ups *,
-    .ups {
+    .ups,
+    .ups .warn-sign {
       animation: none !important;
       transition: none !important;
     }

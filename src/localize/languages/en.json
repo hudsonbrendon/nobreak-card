@@ -18,7 +18,9 @@
   },
   "sub": {
     "since": "for {time}",
-    "runtime": "{time} of runtime"
+    "runtime": "{time} of runtime",
+    "on_battery_for": "On battery for {time}",
+    "real_runtime_full": "Real runtime: {time}"
   },
   "stat": {
     "battery": "Battery",
@@ -28,7 +30,10 @@
     "range": "{low}–{high} V",
     "of_nominal": "{percent}% · {nominal} W",
     "runtime": "{time} left",
-    "real_runtime": "{time} real"
+    "real_runtime": "{time} real",
+    "power": "Power",
+    "power_load": "Power · {percent}%",
+    "utility_range": "Utility · {low}–{high} V"
   },
   "history": {
     "outages": "Outages",

@@ -74,7 +74,7 @@ export class NobreakCard extends LitElement {
       show_name: true,
       show_status: true,
       show_history: true,
-      show_graph: true,
+      show_graph: false,
       show_toolbar: true,
       compact_view: false,
       ...config,
@@ -249,69 +249,54 @@ export class NobreakCard extends LitElement {
     `;
   }
 
-  /** Wall outlet -> UPS tower (battery window) -> load, with the power flow animated per state. */
+  /**
+   * APC Back-UPS BZ1500 standing, in the same oblique as the console cards
+   * (front + depth vector to the upper right): glossy black front with the
+   * power button and its LED ring, status LEDs and APC wordmark; the long side
+   * with the vent grille; floor line. The ring and LEDs carry the state.
+   */
   private _renderHero(st: UpsState): Template {
-    const charge = Math.max(0, Math.min(100, this._num("charge") ?? 0));
-    const level = charge <= 25 ? "low" : charge <= 50 ? "mid" : "high";
-    const fillH = (charge / 100) * 56;
-    const power = this._num("power");
-    const runtime = this._seconds("runtime");
-    const onBattery = BATTERY_STATES.has(st);
-    return html`<div class="hero ${st}" @click=${() => this._moreInfo("charge")}>
-      <svg class="ups" viewBox="0 0 260 190" role="img" aria-label=${this._t(`status.${st}`)}>
-        <!-- wall outlet -->
-        <g class="outlet">
-          <rect x="8" y="112" width="34" height="44" rx="7" />
-          <rect class="slot" x="17" y="124" width="4" height="11" rx="1.5" />
-          <rect class="slot" x="29" y="124" width="4" height="11" rx="1.5" />
-          <circle class="slot" cx="25" cy="145" r="3" />
-        </g>
-        <!-- input cable -->
-        <path class="cable" d="M 42 134 C 62 134 62 150 86 150" />
-        <path class="flow in" d="M 42 134 C 62 134 62 150 86 150" />
-        ${onBattery
-          ? svg`<g class="cut"><line x1="58" y1="134" x2="68" y2="148" /><line x1="68" y1="134" x2="58" y2="148" /></g>`
+    // front 98..146 × 96..180 (150 × 240 mm), depth vector (104, -30) (360 mm)
+    const [fx0, fx1, fy0, fy1, dx, dy] = [98, 146, 96, 180, 104, -30];
+    const side = `M${fx1} ${fy0} L${fx1 + dx} ${fy0 + dy} V${fy1 + dy} L${fx1} ${fy1} Z`;
+    const top = `M${fx0} ${fy0} L${fx1} ${fy0} L${fx1 + dx} ${fy0 + dy} L${fx0 + dx} ${fy0 + dy} Z`;
+    const grille = Array.from({ length: 9 }, (_, k) => {
+      const t = 0.22 + k * 0.07;
+      const x = fx1 + dx * t;
+      const y0 = fy0 + dy * t + 16;
+      return svg`<line x1="${x.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x.toFixed(1)}" y2="${(y0 + 44).toFixed(1)}" class="slat" />`;
+    });
+    const alert = ALERT_STATES.has(st);
+    return html`<div class="hero" @click=${() => this._moreInfo("charge")}>
+      <svg class="art ups ${st}" viewBox="40 14 240 178" xmlns="http://www.w3.org/2000/svg" role="img" aria-label=${this._t(`status.${st}`)}>
+        <line x1="64" y1="182" x2="256" y2="182" class="floor" />
+        <path d="${top}" class="dark-top" />
+        <path d="${side}" class="dark-side" />
+        <path d="M${fx1} ${fy1 - 12} L${fx1 + dx} ${fy1 - 12 + dy} V${fy1 + dy} L${fx1} ${fy1} Z" class="dark-side-low" />
+        <path d="M${fx1 + dx * 0.2} ${fy0 + dy * 0.2 + 12} L${fx1 + dx * 0.86} ${fy0 + dy * 0.86 + 12} V${fy0 + dy * 0.86 + 64} L${fx1 + dx * 0.2} ${fy0 + dy * 0.2 + 64} Z" class="grille-area" />
+        ${grille}
+        <text x="0" y="0" class="emboss" transform="translate(${fx1 + 56} ${fy0 - 1}) rotate(-16)">Back-UPS</text>
+        <path d="M${fx0} ${fy0} H${fx1} V${fy1} H${fx0} Z" class="dark-front" />
+        <path d="M${fx0 + 3} ${fy0 + 4} H${fx1 - 3} V${fy1 - 10} H${fx0 + 3} Z" class="gloss" />
+        <path d="M${fx0 + 1.5} ${fy0 + 2} V${fy1 - 2}" class="shine" />
+        <text x="${(fx0 + fx1) / 2}" y="${fy0 + 17}" class="wordmark" text-anchor="middle">APC</text>
+        <circle cx="${(fx0 + fx1) / 2}" cy="${fy0 + 40}" r="9" class="ring" />
+        <circle cx="${(fx0 + fx1) / 2}" cy="${fy0 + 40}" r="9" class="led-ring" />
+        <circle cx="${(fx0 + fx1) / 2}" cy="${fy0 + 40}" r="6.2" class="chrome-button" />
+        <path d="M${(fx0 + fx1) / 2} ${fy0 + 36.5} V${fy0 + 40} M${(fx0 + fx1) / 2 - 2.6} ${fy0 + 37.6} A3.6 3.6 0 1 0 ${(fx0 + fx1) / 2 + 2.6} ${fy0 + 37.6}" class="power-glyph" />
+        <circle cx="${fx0 + 13}" cy="${fy0 + 58}" r="1.9" class="led led-utility" />
+        <circle cx="${fx1 - 13}" cy="${fy0 + 58}" r="1.9" class="led led-battery" />
+        <text x="${(fx0 + fx1) / 2}" y="${fy1 - 15}" class="wordmark small" text-anchor="middle">BZ1500</text>
+        <rect x="${fx0 + 6}" y="${fy1 - 7}" width="${fx1 - fx0 - 12}" height="3" rx="1.5" class="foot" />
+        <g class="bolt"><path d="M${fx1 + 70} ${fy0 - 56} l-9 15 h7 l-4 13 l12 -17 h-7 l5 -11 z" /></g>
+        ${alert
+          ? svg`<g class="warn-sign">
+              <path d="M186 24 l12 20 h-24 z" />
+              <rect x="184.8" y="30" width="2.4" height="7" rx="1" class="warn-glyph" />
+              <circle cx="186" cy="40.5" r="1.4" class="warn-glyph" />
+            </g>`
           : nothing}
-        <!-- output cable to the load -->
-        <path class="cable" d="M 174 150 C 194 150 196 140 206 140" />
-        <path class="flow out" d="M 174 150 C 194 150 196 140 206 140" />
-        <!-- load (monitor) -->
-        <g class="load">
-          <rect x="206" y="110" width="46" height="32" rx="4" />
-          <rect class="screen" x="210" y="114" width="38" height="24" rx="2" />
-          <rect x="226" y="142" width="6" height="8" />
-          <rect x="217" y="150" width="24" height="4" rx="2" />
-        </g>
-        <!-- UPS tower -->
-        <g class="tower">
-          <rect class="shadow" x="90" y="176" width="80" height="8" rx="4" />
-          <rect class="body" x="86" y="14" width="88" height="164" rx="12" />
-          <rect class="panel" x="96" y="24" width="68" height="44" rx="7" />
-          <circle class="button" cx="130" cy="46" r="12" />
-          <path class="button-glyph" d="M 130 39 L 130 46 M 124.5 41.5 A 7.5 7.5 0 1 0 135.5 41.5" />
-          <circle class="led power" cx="106" cy="34" r="3" />
-          <circle class="led battery" cx="154" cy="34" r="3" />
-          <!-- battery window -->
-          <rect class="battery-shell" x="108" y="84" width="44" height="64" rx="6" />
-          <rect class="battery-cap" x="122" y="79" width="16" height="6" rx="2" />
-          <clipPath id="nb-fill"><rect x="112" y="88" width="36" height="56" rx="3" /></clipPath>
-          <g clip-path="url(#nb-fill)">
-            <rect class="battery-fill ${level}" x="112" y=${144 - fillH} width="36" height=${fillH} />
-          </g>
-          <path class="bolt" d="M 133 98 L 122 118 L 130 118 L 126 136 L 139 113 L 131 113 Z" />
-          <line class="vent" x1="100" y1="160" x2="160" y2="160" />
-          <line class="vent" x1="100" y1="166" x2="160" y2="166" />
-        </g>
       </svg>
-      <span class="pill charge ${level}" title=${this._t("stat.battery")}>
-        <ha-icon icon=${st === "charging" ? "mdi:battery-charging" : "mdi:battery"}></ha-icon>${Math.round(charge)}%
-      </span>
-      ${runtime !== null
-        ? html`<span class="pill runtime ${onBattery ? "warn" : ""}"><ha-icon icon="mdi:timer-outline"></ha-icon>${formatDuration(runtime)}</span>`
-        : nothing}
-      ${power !== null
-        ? html`<span class="pill power"><ha-icon icon="mdi:flash"></ha-icon>${this._number(power)} W</span>`
-        : nothing}
     </div>`;
   }
 
@@ -355,14 +340,23 @@ export class NobreakCard extends LitElement {
 
   private _renderStatus(st: UpsState): Template {
     if (!this._config.show_status) return nothing;
-    let sub = "";
     const utility = this._state("utility");
-    if (BATTERY_STATES.has(st) && utility?.last_changed) sub = this._t("sub.since", { time: formatDuration((Date.now() - Date.parse(utility.last_changed)) / 1000) });
+    const real = this._num("real_runtime");
+    const runtime = this._seconds("runtime");
+    let detail = "";
+    if (BATTERY_STATES.has(st) && utility?.last_changed) {
+      detail = this._t("sub.on_battery_for", { time: formatDuration((Date.now() - Date.parse(utility.last_changed)) / 1000) });
+      if (real !== null) detail += ` · ${this._t("stat.real_runtime", { time: formatDuration(real * 60) })}`;
+    } else if (st !== "unavailable") {
+      if (real !== null) detail = this._t("sub.real_runtime_full", { time: formatDuration(real * 60) });
+      else if (runtime !== null) detail = this._t("sub.runtime", { time: formatDuration(runtime) });
+    }
     return html`
       <div class="status ${st} ${ALERT_STATES.has(st) ? "alert" : ""}">
         ${st === "testing" ? html`<ha-spinner class="status-spinner" size="tiny"></ha-spinner>` : nothing}
-        <span>${this._t(`status.${st}`)}</span>${sub ? html`<span class="sub">· ${sub}</span>` : nothing}
+        <span>${this._t(`status.${st}`)}</span>
       </div>
+      ${detail ? html`<div class="detail">${detail}</div>` : nothing}
     `;
   }
 
@@ -375,33 +369,26 @@ export class NobreakCard extends LitElement {
 
   private _renderStats(st: UpsState): Template {
     const charge = this._num("charge");
-    const runtime = this._seconds("runtime");
     const power = this._num("power");
     const load = this._num("load");
-    const nominal = this._num("nominal_power");
     const voltage = this._num("input_voltage");
     const low = this._num("transfer_low");
     const high = this._num("transfer_high");
     const onBattery = BATTERY_STATES.has(st);
     const loadValue = power !== null ? `${this._number(power)} W` : load !== null ? `${Math.round(load)}%` : "—";
-    const loadSub =
-      load !== null && nominal !== null ? this._t("stat.of_nominal", { percent: Math.round(load), nominal: Math.round(nominal) }) : this._t("stat.load");
+    const loadSub = load !== null ? this._t("stat.power_load", { percent: Math.round(load) }) : this._t("stat.power");
     return html`<div class="stats">
       ${this._block(
         "charge",
         charge === null ? "—" : `${Math.round(charge)}%`,
-        this._num("real_runtime") !== null
-          ? this._t("stat.real_runtime", { time: formatDuration(this._num("real_runtime")! * 60) })
-          : runtime !== null
-            ? this._t("stat.runtime", { time: formatDuration(runtime) })
-            : this._t("stat.battery"),
+        this._t("stat.battery"),
         charge !== null && charge <= 25 ? "bad" : ""
       )}
       ${this._block("power", loadValue, loadSub, load !== null && load >= 80 ? "bad" : "")}
       ${this._block(
         "input_voltage",
         onBattery ? this._t("stat.no_utility") : voltage === null ? "—" : `${Math.round(voltage)} V`,
-        low !== null && high !== null ? this._t("stat.range", { low, high }) : this._t("stat.utility"),
+        low !== null && high !== null ? this._t("stat.utility_range", { low, high }) : this._t("stat.utility"),
         onBattery ? "warn" : voltage !== null && low !== null && high !== null && (voltage <= low + 5 || voltage >= high - 5) ? "warn" : ""
       )}
     </div>`;

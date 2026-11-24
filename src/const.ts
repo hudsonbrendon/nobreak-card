@@ -1,5 +1,5 @@
 export const CARD_NAME = "nobreak-card";
-export const CARD_VERSION = "2.1.1";
+export const CARD_VERSION = "2.2.0";
 
 /** The card is built around the `nobreak` integration; `nut` supplies the live readings. */
 export const PLATFORM = "nobreak";

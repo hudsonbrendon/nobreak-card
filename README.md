@@ -14,11 +14,12 @@ MiSTer and Bambu cards.
 
 ![graphs and history](assets/graphs.png)
 
-- **Drawing**: wall outlet → UPS tower → monitor, with the battery window
-  filled to the real charge. On utility the power flows in and out; charging
-  shows a bolt; on battery the input is cut and the output turns orange;
-  low battery, overload and scheduled shutdown blink red; self-test blinks
-  amber.
+- **Drawing**: the APC Back-UPS tower in the same oblique, grey/black style as
+  the console and appliance cards (glossy front, power button with its LED
+  ring, status LEDs, side grille, floor line). The ring is green on utility,
+  breathes while charging, blinks amber on battery / self-test (with a bolt)
+  and red with a warning sign on low battery, overload or a scheduled
+  shutdown.
 - **Status**: online, charging, on battery (and for how long), low battery,
   self-test, overload, shutdown scheduled, unavailable.
 - **Stats**: battery % and runtime left (the real one once measured), output power (W, load % of nominal),
@@ -27,9 +28,8 @@ MiSTer and Bambu cards.
   battery, last self-test and result, battery age, **battery health** (with
   the real runtime measured on the last discharge) and **grid today** (min–max
   voltage, time out of the adequate band).
-- **Graphs**: output power and utility voltage over the last 24 h with the
-  outages shaded (history API, refreshed every 5 min; `show_graph: false` to
-  hide).
+- **Graphs** (optional, `show_graph: true`): output power and utility voltage
+  over the last 24 h with the outages shaded (history API, every 5 min).
 - **Toolbar**: quick self-test, deep self-test (with confirmation), front panel
   test, stop test while one runs, cancel a scheduled shutdown, mute while on
   battery, enable/disable the alarm, automatic load shedding on/off, input
@@ -60,7 +60,7 @@ device: <nobreak device id>   # pick it in the visual editor
 # show_name: true
 # show_status: true
 # show_history: true
-# show_graph: true
+# show_graph: false
 # show_toolbar: true
 # compact_view: false
 # entities:                   # optional overrides, by card key

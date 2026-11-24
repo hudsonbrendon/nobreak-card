@@ -147,7 +147,7 @@ describe("graph", () => {
       "sensor.nobreak_tensao_de_entrada": [{ s: "216", lu: now - 3600 }],
       "binary_sensor.nobreak_rede_eletrica": [{ s: "on", lu: now - 7200 }, { s: "off", lu: now - 1800 }, { s: "on", lu: now - 1500 }],
     })) as HassObject["callWS"];
-    el.setConfig(config);
+    el.setConfig({ ...config, show_graph: true });
     el.hass = hass;
     document.body.appendChild(el);
     await el.updateComplete;

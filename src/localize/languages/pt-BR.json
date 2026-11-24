@@ -18,7 +18,9 @@
   },
   "sub": {
     "since": "há {time}",
-    "runtime": "{time} de autonomia"
+    "runtime": "{time} de autonomia",
+    "on_battery_for": "Na bateria há {time}",
+    "real_runtime_full": "Autonomia real: {time}"
   },
   "stat": {
     "battery": "Bateria",
@@ -28,7 +30,10 @@
     "range": "{low}–{high} V",
     "of_nominal": "{percent}% · {nominal} W",
     "runtime": "{time} restantes",
-    "real_runtime": "{time} reais"
+    "real_runtime": "{time} reais",
+    "power": "Potência",
+    "power_load": "Potência · {percent}%",
+    "utility_range": "Rede · {low}–{high} V"
   },
   "history": {
     "outages": "Quedas",
